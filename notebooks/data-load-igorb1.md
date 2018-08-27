@@ -5,7 +5,6 @@
 Download the latest GDELT masterfile:
 
 ```bash
-cd /cygdrive/c/Users/ibaranov/Downloads/York/group-projects/csda1020-project-1/data
 wget -c http://data.gdeltproject.org/gdeltv2/masterfilelist.txt
 ```
 
