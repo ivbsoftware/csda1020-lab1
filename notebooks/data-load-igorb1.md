@@ -38,6 +38,12 @@ cd events
 while read in; do wget "$in"; done < ../lasttwoyearslist.txt
 ```
 
+While the files are being downloaded, open another SSH console and monitor the progress by counting number of files in events folder:
+
+```bash
+ls events/ | wc -l
+```
+
 Unzip the files:
 
 ```bash
