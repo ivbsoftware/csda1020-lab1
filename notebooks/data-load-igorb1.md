@@ -35,7 +35,7 @@ Download the files:
 ```bash
 mkdir events
 cd events
-while read in; wget "$in"; done < ../lasttwoyearslist.txt
+while read in; do wget "$in"; done < ../lasttwoyearslist.txt
 ```
 
 Unzip the files:
