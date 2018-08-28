@@ -1,6 +1,10 @@
 # Loading Data
 
+SSH to the VM (user maria_dev, password maria_dev):
 
+```bash
+ssh maria_dev@127.0.0.1 -p 2222
+```
 
 Download the latest GDELT masterfile:
 
