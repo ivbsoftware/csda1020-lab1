@@ -45,11 +45,44 @@ while read in; do wget "$in"; done < ../lasttwoyearslist.txt
 While the files are being downloaded, open another SSH console and monitor the progress by counting number of files in events folder:
 
 ```bash
-ls events/ | wc -l
+ls | wc -l
 ```
 
 Unzip the files:
 
 ```bash
-gzip -d --suffix=.zip *.*
+for file in *.zip; do echo $file; gzip -d -suffix=.zip $file; done
+```
+
+# Copy the file to hdfs: 
+
+Create a directory in hadoop called gdelt/events by using the following command: 
+   
+ ```bash
+ hdfs dfs -mkdir -p  mbaranov/gdelt/events
+ ```
+   
+ For example if <your_id> is 3283939 the above command should be: 
+    
+ ```bash
+ hdfs dfs -mkdir -p mbaranov/gdelt/events
+ ```
+
+You can now copy the event files you downloaded earlier to the hdfs directory you just created by running the following command 
+
+```bash
+mkdir ../loaded-files
+for file in *.CSV; do echo $file;  hdfs dfs -put $file mbaranov/gdelt/events/; mv $file -f ../loaded-files; done
+```
+
+Check how many files left
+
+```bash
+ls events/ | wc -l
+```
+
+Confirm that the files have been copied to hadoop my running the following command: 
+
+```bash
+hdfs dfs -ls mbaranov/gdelt/events/
 ```
