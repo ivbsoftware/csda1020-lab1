@@ -12,7 +12,7 @@ Download the latest GDELT masterfile:
 wget -c http://data.gdeltproject.org/gdeltv2/masterfilelist.txt
 ```
 
-Extract last 2 years of the 'master' files list. Note that insted of "2 year ago" you could use any of date utility's parameters, like "5 month ago" etc. Here is the Linux AWK command that does the following:
+Extract last 2 years of the 'export' files list. Note that insted of "2 year ago" you could use any of Linux 'date' utility's parameters, like "5 month ago" etc. Here is the Linux AWK command that does the following:
  
  - Creates variable dateFrom in format like '20160827'
  - For each line in masterfilelist.txt:
