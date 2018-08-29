@@ -62,7 +62,7 @@ Create a directory in hadoop called gdelt/events by using the following command:
  hdfs dfs -mkdir -p  mbaranov/gdelt/events
  ```
    
- For example if <your_id> is 3283939 the above command should be: 
+ For example if <your_id> is mbaranov the above command should be: 
     
  ```bash
  hdfs dfs -mkdir -p mbaranov/gdelt/events
