@@ -68,14 +68,14 @@ Create a directory in hadoop called gdelt/events by using the following command:
  hdfs dfs -mkdir -p mbaranov/gdelt/events
  ```
 
-You can now copy the event files you downloaded earlier to the hdfs directory you just created by running the following command 
-
+You can now copy the event files you downloaded earlier to the hdfs directory you just created by running the following commands. Those commands for eact file with CSV extension will print the name of the file (to see the progress), then load the file to HDFS and the move the processed file to folder ../loaded-files:
+ 
 ```bash
 mkdir ../loaded-files
 for file in *.CSV; do echo $file;  hdfs dfs -put $file mbaranov/gdelt/events/; mv $file -f ../loaded-files; done
 ```
 
-Check how many files left
+To check how many files left, run the following from another(!) command window:
 
 ```bash
 ls events/ | wc -l
