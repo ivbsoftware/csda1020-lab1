@@ -1,20 +1,29 @@
 # Loading Classified Ads for Cars Data
 
+This is the link fo the dataset. Download it locally:
+
 https://www.kaggle.com/mirosval/personal-cars-classifieds/
 
+Logib ti the Hortonworks VM and create folder for the project:
+
 ```bash
+ssh maria_dev@127.0.0.1 -p 2222
+cd used-cars/
+exit
+```
 
+From the Git bash or Putty console copy the file to the Hortonworks VM:
+
+```bash
 scp -P 2222 classified-ads-for-cars.zip maria_dev@127.0.0.1:/home/maria_dev/used-cars
+```
 
+Login to VM, unzip the file and count the number of lines in the created file (should be about 3.5M):
+
+```bash
 ssh maria_dev@127.0.0.1 -p 2222
 cd used-cars/
 gzip -d --suffix=.zip *.*
-head classified-ads-for-cars
-```
-
-Count the number of lines in the created file (should be about 3.5M):
-
-```bash
 wc -l classified-ads-for-cars
 ```
 
@@ -34,7 +43,7 @@ sed -i 1d classified-ads-for-cars_aa
 
 # Copy the files to hdfs: 
 
-Create a directory in hadoop called gdelt/events by using the following command: 
+Create a directory in hadoop called baranov/cars/classified by using the following command: 
    
  ```bash
  hdfs dfs -mkdir -p  baranov/cars/classified
