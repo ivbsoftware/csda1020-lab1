@@ -50,7 +50,7 @@ Create a directory in hadoop called baranov/cars/classified by using the followi
  hdfs dfs -mkdir -p  baranov/cars/classified
  ```
 
-You can now copy the event files you downloaded earlier to the hdfs directory you just created by running the following commands. Those commands for each file with CSV extension will print the name of the file (to see the progress), then load the file to HDFS and then move the processed file to folder ../loaded-files:
+You can now copy the event files you downloaded earlier to the hdfs directory you just created by running the following commands. Those commands for each file will print the name of the file (to see the progress), then load the file to HDFS and then move the processed file to folder ../loaded-files:
  
 ```bash
 mkdir ../loaded-files
@@ -67,4 +67,12 @@ List files copied to hadoop by running the following command:
 
 ```bash
 hdfs dfs -ls baranov/cars/classified/
+```
+
+Remove chunks
+
+```bash
+rm -f *
+cd ..
+rm -r -f chunks
 ```
