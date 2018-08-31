@@ -36,7 +36,8 @@ Copy first line of the file to 'headers' file
 Split the file into 100 chunks and remove headers line from the first file:
 
 ```bash
-mkdir chunkscd chunks
+mkdir chunks
+cd chunks
 split --number=l/100 ../classified-ads-for-cars classified-ads-for-cars_
 sed -i 1d classified-ads-for-cars_aa
 ```
