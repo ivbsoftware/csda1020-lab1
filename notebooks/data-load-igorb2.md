@@ -1,37 +1,60 @@
-# Loading Data
+# Loading Classified Ads for Cars Data
 
-
-
-Download the latest GDELT masterfile:
+https://www.kaggle.com/mirosval/personal-cars-classifieds/
 
 ```bash
-wget -c http://data.gdeltproject.org/gdeltv2/masterfilelist.txt
-```
 
-Extract last 2 years of the 'master' files list:
+scp -P 2222 classified-ads-for-cars.zip maria_dev@127.0.0.1:/home/maria_dev/used-cars
 
-```bash
-awk -v date="$(date --date='2 year ago' +%Y%m%d)" \
-'{if (/export/ && int(substr($3, 38, 8)) > int(date)) print $3}' \
-masterfilelist.txt > lasttwoyearslist.txt
-```
-
-Count the number of lines in the created file (should be about 69K):
-
-```bash
-wc -l lasttwoyearslist.txt
-```
-
-Download the files:
-
-```bash
-mkdir files
-cd files
-while read in; wget "$in"; done < ../lasttwoyearslist.txt
-```
-
-Unzip the files:
-
-```bash
+ssh maria_dev@127.0.0.1 -p 2222
+cd used-cars/
 gzip -d --suffix=.zip *.*
+head classified-ads-for-cars
+```
+
+Count the number of lines in the created file (should be about 3.5M):
+
+```bash
+wc -l classified-ads-for-cars
+```
+
+Copy first line of the file to 'headers' file
+
+```bash
+ head -1 classified-ads-for-cars > headers
+```
+
+Split the file into 100 chunks and remove headers line from the first file:
+
+```bash
+mkdir chunkscd chunks
+split --number=l/100 ../classified-ads-for-cars classified-ads-for-cars_
+sed -i 1d classified-ads-for-cars_aa
+```
+
+# Copy the files to hdfs: 
+
+Create a directory in hadoop called gdelt/events by using the following command: 
+   
+ ```bash
+ hdfs dfs -mkdir -p  baranov/cars/classified
+ ```
+
+You can now copy the event files you downloaded earlier to the hdfs directory you just created by running the following commands. Those commands for each file with CSV extension will print the name of the file (to see the progress), then load the file to HDFS and then move the processed file to folder ../loaded-files:
+ 
+```bash
+mkdir ../loaded-files
+for file in *; do echo $file;  hdfs dfs -put $file baranov/cars/classified/; mv $file -f ../loaded-files; done
+```
+
+To check how many unloaded files left, run the following commabd from another(!) bash window:
+
+```bash
+ls events/ | wc -l
+```
+
+List files copied to hadoop by running the following command: 
+
+```bash
+hdfs dfs -ls baranov/cars/classified/
 ```
