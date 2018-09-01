@@ -59,20 +59,14 @@ for file in *.zip; do echo $file; gzip -d -suffix=.zip $file; done
 Create a directory in hadoop called gdelt/events by using the following command: 
    
  ```bash
- hdfs dfs -mkdir -p  mbaranov/gdelt/events
+ hdfs dfs -mkdir -p  gdelt/events
  ```
    
- For example if <your_id> is mbaranov the above command should be: 
-    
- ```bash
- hdfs dfs -mkdir -p mbaranov/gdelt/events
- ```
-
-You can now copy the event files you downloaded earlier to the hdfs directory you just created by running the following commands. Those commands for each file with CSV extension will print the name of the file (to see the progress), then load the file to HDFS and then move the processed file to folder ../loaded-files:
+ You can now copy the event files you downloaded earlier to the hdfs directory you just created by running the following commands. Those commands for each file with CSV extension will print the name of the file (to see the progress), then load the file to HDFS and then move the processed file to folder ../loaded-files:
  
 ```bash
 mkdir ../loaded-files
-for file in *.CSV; do echo $file;  hdfs dfs -put $file mbaranov/gdelt/events/; mv $file -f ../loaded-files; done
+for file in *.CSV; do echo $file;  hdfs dfs -put $file gdelt/events/; mv $file -f ../loaded-files; done
 ```
 
 To check how many unloaded files left, run the following commabd from another(!) bash window:
@@ -84,5 +78,18 @@ ls events/ | wc -l
 List files copied to hadoop by running the following command: 
 
 ```bash
-hdfs dfs -ls mbaranov/gdelt/events/
+hdfs dfs -ls gdelt/events/
+```
+## Some helpful commands
+
+Get HDFS capacity report
+
+```bash
+sudo -u hdfs hdfs dfsadmin -report
+```
+
+To delete the HDFS directory and any content under it recursively (careful!). If you are not using -skipTrash attribute, the trash will be available for restore for 6h and then deleted automatically:
+
+```bash
+hdfs dfs -rm -R -skipTrash gdelt/events
 ```
