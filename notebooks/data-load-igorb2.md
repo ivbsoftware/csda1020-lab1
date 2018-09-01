@@ -72,7 +72,8 @@ hdfs dfs -ls baranov/cars/classified/
 Remove chunks
 
 ```bash
-rm -f *
 cd ..
 rm -r -f chunks
+rm -f loaded-files/*
+rm -r -f loaded-files
 ```
