@@ -51,7 +51,7 @@ ls | wc -l
 Unzip the files:
 
 ```bash
-for file in *.zip; do echo $file; gzip -d -suffix=.zip $file; done
+for file in *.zip; do echo $file; gzip -d --suffix=.zip $file; done
 ```
 
 # Copy the files to hdfs: 
