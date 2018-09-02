@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Classified Ads for Cars Datatset Analysis"
 output: github_document
 ---
 
@@ -7,30 +7,57 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## GitHub Documents
+## Connecting to HIVE runnubg on Hortonworks Sandbox VM
 
-This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
-
-## Including Code
-
-You can include R code in the document as follows:
-
-```{r cars}
-summary(cars)
+```
+options( java.parameters = "-Xmx8g" )
+library(rJava)
+library(RJDBC)
+ 
+cp = c("//d:/tools/apache-hive-1.2.2/lib/hive-jdbc-1.2.2-standalone.jar",
+       "//d:/tools/hadoop-2.7.7/share/hadoop/common/hadoop-common-2.7.7.jar")
+.jinit(classpath=cp) 
+ 
+drv <- JDBC(driverClass = "org.apache.hive.jdbc.HiveDriver",
+            classPath = "//d:/tools/apache-hive-1.2.2/lib/hive-jdbc-1.2.2-standalone.jar",
+             identifier.quote="`")
+ 
+conn <- dbConnect(drv, "jdbc:hive2://127.0.0.1:10000/used_cars", "maria_dev", "maria_dev")
 ```
 
-## Including Plots
+## Discover the used_cars database
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r message=FALSE, warning=FALSE, include=FALSE}
+options( java.parameters = "-Xmx8g" )
+library(rJava)
+library(RJDBC)
+ 
+cp = c("//d:/tools/apache-hive-1.2.2/lib/hive-jdbc-1.2.2-standalone.jar",
+       "//d:/tools/hadoop-2.7.7/share/hadoop/common/hadoop-common-2.7.7.jar")
+.jinit(classpath=cp) 
+ 
+drv <- JDBC(driverClass = "org.apache.hive.jdbc.HiveDriver",
+            classPath = "//d:/tools/apache-hive-1.2.2/lib/hive-jdbc-1.2.2-standalone.jar",
+             identifier.quote="`")
+ 
+conn <- dbConnect(drv, "jdbc:hive2://127.0.0.1:10000/used_cars", "maria_dev", "maria_dev")
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Discover the used_cars database
 
-```bash
-ssh maria_dev@127.0.0.1 -p 2222
-cd used-cars/
-exit
+Events table size and head:
+
+```{r eval=FALSE, include=FALSE}
+dbGetQuery(conn, "select count (*) from events")
+```
+
+```{r}
+dbGetQuery(conn, "select * from events limit 30")
+```
+
+```{r}
+descr <- dbGetQuery(conn, "describe events")
+descr
 ```
