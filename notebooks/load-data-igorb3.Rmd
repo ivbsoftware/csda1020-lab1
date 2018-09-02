@@ -50,14 +50,22 @@ conn <- dbConnect(drv, "jdbc:hive2://127.0.0.1:10000/used_cars", "maria_dev", "m
 Events table size and head:
 
 ```{r eval=FALSE, include=FALSE}
-dbGetQuery(conn, "select count (*) from events")
+# dbGetQuery(conn, "select count (*) from events")
+```
+
+```{r results='asis'}
+library(xtable)
+options(xtable.floating = TRUE)
+options(xtable.timestamp = "")
+options(xtable.comment = FALSE)
+
+dbSendUpdate(conn, "USE used_cars")
+tb <- dbGetQuery(conn, "select * from events limit 30")
+print(xtable(tb), type = "html", scalebox=.5)
+dbDisconnect(conn)
 ```
 
 ```{r}
-dbGetQuery(conn, "select * from events limit 30")
-```
-
-```{r}
-descr <- dbGetQuery(conn, "describe events")
-descr
+# descr <- dbGetQuery(conn, "describe events")
+# descr
 ```
