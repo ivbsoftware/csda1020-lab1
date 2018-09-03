@@ -89,22 +89,38 @@ running the HQL statement below.
 
     dbGetQuery(conn, "select count (*) from events")
 
-For the analysis we will extract not more than 20K rows from EVENT table
-randomly using the HQL statement below. We skip the rows mising one of
-the folloowing important attributes: maker, model, mileage,
-manufacture\_year or price\_eur. As we can see, we had only 11431
-samples complying to this condition:
+For the analysis we will extract not more than 30K rows from EVENT table
+randomly using the HQL statement below. We skip the rows mising
+attributes except for the ones not importants and rarely filled like
+body\_type, color\_slug and stk\_year:
 
 ``` r
-lim <- 20000/3552912
+filter <- paste(
+      " maker <> ''",
+      " AND model <> ''",
+      " AND mileage is not NULL",
+      " AND manufacture_year is not NULL",
+      " AND engine_displacement is not NULL",
+      " AND engine_power is not NULL",
+      " AND transmission <> ''",
+      " AND door_count is not NULL",
+      " AND seat_count is not NULL",
+      " AND fuel_type <> ''",
+      " AND date_created is not NULL",
+      " AND date_last_seen is not NULL"
+) 
+count <- dbGetQuery(conn, paste("select count(*) from events", " WHERE", filter))
+cars.sample.totalFilered <- count$`_c0`
+```
+
+``` r
+car.sample.maxSize <- 30000
+lim <- car.sample.maxSize/cars.sample.totalFilered
 
 sample_HQL <- paste(
-  "select * from events",
-    " WHERE",
-      " rand(123) <= ", lim,
-      " AND maker <> '' AND model <> '' AND mileage is not NULL AND manufacture_year is not NULL",
-      " AND price_eur is not NULL",
-  " limit 20000"
+  "select * from events WHERE", filter,
+      " AND rand(123) < ", lim,
+  " limit ", 1.2 * car.sample.maxSize
 ) 
 
 cars.sample <- dbGetQuery(conn, sample_HQL)
@@ -115,68 +131,35 @@ colnames(cars.sample) <- c(
 nrow(cars.sample)
 ```
 
-    ## [1] 11431
+    ## [1] 29725
 
 ``` r
 kable(head(cars.sample))
 ```
 
-| Maker   | Model    | Mileage | Year | Disp | Pwr | Body | Color | Sticker | Trans | Doors | Seats | Fuel   | Listed                  | Removed                 |    Price |
-| :------ | :------- | ------: | ---: | ---: | --: | :--- | :---- | :------ | :---- | ----: | ----: | :----- | :---------------------- | :---------------------- | -------: |
-| nissan  | qashqai  |   44450 | 2010 | 2000 | 110 |      |       | None    | man   |     5 |     5 | diesel | 2015-11-14 18:54:14.758 | 2016-01-27 20:40:15.463 | 13693.56 |
-| ford    | mondeo   |  159217 | 2005 | 1998 |  96 |      |       | None    | man   |     5 |     5 | diesel | 2015-11-14 18:55:26.371 | 2016-01-27 20:40:15.463 |  3252.70 |
-| volvo   | v40      |   18755 | 2013 | 1560 |  84 |      |       | None    | man   |     5 |     5 | diesel | 2015-11-14 18:55:27.402 | 2016-01-27 20:40:15.463 | 19059.96 |
-| citroen | berlingo |    5000 | 2015 | 1560 |  88 |      |       | None    | man   |    NA |    NA | diesel | 2015-11-14 18:55:33.292 | 2016-01-27 20:40:15.463 | 14776.09 |
-| skoda   | octavia  |   14251 | 2014 | 1598 |  77 |      |       | None    | man   |     5 |     5 | diesel | 2015-11-14 18:55:37.782 | 2016-01-27 20:40:15.463 | 17760.92 |
-| skoda   | superb   |  175159 | 2011 | 2000 | 103 |      |       | None    | auto  |     5 |     5 | diesel | 2015-11-14 18:55:41.427 | 2016-01-27 20:40:15.463 | 14433.75 |
+| Maker   | Model  | Mileage | Year | Disp | Pwr | Body | Color | Sticker | Trans | Doors | Seats | Fuel     | Listed                  | Removed                 |    Price |
+| :------ | :----- | ------: | ---: | ---: | --: | :--- | :---- | :------ | :---- | ----: | ----: | :------- | :---------------------- | :---------------------- | -------: |
+| skoda   | fabia  |  130340 | 2001 | 1400 |  50 |      |       | None    | man   |     5 |     5 | gasoline | 2015-11-14 18:10:07.638 | 2016-01-27 20:40:15.463 |  2442.64 |
+| skoda   | fabia  |   87777 | 2005 | 1400 |  51 |      |       | None    | man   |     5 |     5 | diesel   | 2015-11-14 18:10:08.414 | 2016-01-27 20:40:15.463 |  3256.85 |
+| ford    | mondeo |  164867 | 2012 | 2000 | 120 |      |       | None    | man   |     5 |     5 | diesel   | 2015-11-14 18:10:08.693 | 2016-01-27 20:40:15.463 | 11102.89 |
+| citroen | c5     |  126500 | 2006 | 1600 |  80 |      |       | None    | man   |     5 |     5 | diesel   | 2015-11-14 18:10:08.737 | 2016-01-27 20:40:15.463 |  3256.85 |
+| skoda   | fabia  |    7993 | 2015 | 1200 |  81 |      |       | None    | man   |     5 |     5 | gasoline | 2015-11-14 18:54:14.7   | 2016-01-27 20:40:15.463 | 11102.89 |
+| hyundai | ix20   |   23196 | 2013 | 1400 |  66 |      |       | None    | man   |     5 |     5 | gasoline | 2015-11-14 18:54:16.114 | 2016-01-27 20:40:15.463 |  9807.55 |
 
 ``` r
-summary(cars.sample)
+# summary(cars.sample)
 ```
-
-    ##     Maker              Model              Mileage             Year     
-    ##  Length:11431       Length:11431       Min.   :      0   Min.   :   0  
-    ##  Class :character   Class :character   1st Qu.:  26116   1st Qu.:2005  
-    ##  Mode  :character   Mode  :character   Median :  94220   Median :2010  
-    ##                                        Mean   : 121082   Mean   :2003  
-    ##                                        3rd Qu.: 159226   3rd Qu.:2014  
-    ##                                        Max.   :9257655   Max.   :2017  
-    ##                                                                        
-    ##       Disp            Pwr             Body              Color          
-    ##  Min.   :   13   Min.   : 10.00   Length:11431       Length:11431      
-    ##  1st Qu.: 1390   1st Qu.: 66.00   Class :character   Class :character  
-    ##  Median : 1598   Median : 81.00   Mode  :character   Mode  :character  
-    ##  Mean   : 1878   Mean   : 92.23                                        
-    ##  3rd Qu.: 1984   3rd Qu.:105.00                                        
-    ##  Max.   :32000   Max.   :558.00                                        
-    ##  NA's   :1836    NA's   :1119                                          
-    ##    Sticker             Trans               Doors           Seats       
-    ##  Length:11431       Length:11431       Min.   :0.000   Min.   : 0.000  
-    ##  Class :character   Class :character   1st Qu.:4.000   1st Qu.: 5.000  
-    ##  Mode  :character   Mode  :character   Median :4.000   Median : 5.000  
-    ##                                        Mean   :4.114   Mean   : 4.892  
-    ##                                        3rd Qu.:5.000   3rd Qu.: 5.000  
-    ##                                        Max.   :6.000   Max.   :55.000  
-    ##                                        NA's   :2695    NA's   :3307    
-    ##      Fuel              Listed            Removed              Price       
-    ##  Length:11431       Length:11431       Length:11431       Min.   :     0  
-    ##  Class :character   Class :character   Class :character   1st Qu.:  1295  
-    ##  Mode  :character   Mode  :character   Mode  :character   Median :  6891  
-    ##                                                           Mean   : 10117  
-    ##                                                           3rd Qu.: 14350  
-    ##                                                           Max.   :781863  
-    ## 
 
 ``` r
 require(forcats)
 total <- nrow(cars.sample)
 ggplot(cars.sample, aes(fct_rev(fct_infreq(Maker)))) +
        geom_bar() + 
-       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 75)+
+       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 120)+
 #       theme(axis.text.x = element_text(angle =90 , hjust = 1, vjust = 0.5)) +
        labs(x="", y="Percent of Ads in the Sample Set") +
 #       scale_y_log10(breaks = c(1, 2, 5, 10, 25, 50, 100, 250, 500, 1000)) +
-        scale_y_continuous(labels = function(x) sprintf("%.2f%%",x/total*100)) +
+        scale_y_continuous(labels = function(x) sprintf("%.0f%%",x/total*100)) +
        coord_flip()
 ```
 

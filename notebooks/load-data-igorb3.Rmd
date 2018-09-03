@@ -85,26 +85,16 @@ dbGetQuery(conn, "select count (*) from events")
 # dbGetQuery(conn, "select count (*) from events")
 ```
 
-For the analysis we will extract not more than 20K rows from EVENT table randomly using the HQL statement below. We skip the rows mising one of the folloowing important attributes: maker, model, mileage, manufacture_year or price_eur. As we can see, we had only 11431 samples complying to this condition:
-
+For the analysis we will extract not more than 30K rows from EVENT table randomly using the HQL statement below. We skip the rows mising attributes except for the ones not importants and rarely filled like body_type, color_slug and stk_year:
 
 ```{r}
-# Filters most important attributes
 filter <- paste(
       " maker <> ''",
       " AND model <> ''",
       " AND mileage is not NULL",
       " AND manufacture_year is not NULL",
-      " AND price_eur is not NULL"
-) 
-
-# Filters the rest of the attributes
-filter2 <- paste(
-      " engine_displacement is not NULL",
+      " AND engine_displacement is not NULL",
       " AND engine_power is not NULL",
-      " AND body_type <> ''",
-      " AND color_slug <> ''",
-      " AND stk_year <> ''",
       " AND transmission <> ''",
       " AND door_count is not NULL",
       " AND seat_count is not NULL",
@@ -112,20 +102,19 @@ filter2 <- paste(
       " AND date_created is not NULL",
       " AND date_last_seen is not NULL"
 ) 
-
-count <- dbGetQuery(conn, paste("select count(*) from events", " WHERE", filter, " AND", filter2))
+count <- dbGetQuery(conn, paste("select count(*) from events", " WHERE", filter))
 cars.sample.totalFilered <- count$`_c0`
 ```
 
 
 ```{r}
-car.sample.maxSize <- 20000
+car.sample.maxSize <- 30000
 lim <- car.sample.maxSize/cars.sample.totalFilered
 
 sample_HQL <- paste(
-  "select * from events WHERE", filter, 
-      " AND rand(123) <= ", lim,
-  " limit ", car.sample.maxSize
+  "select * from events WHERE", filter,
+      " AND rand(123) < ", lim,
+  " limit ", 1.2 * car.sample.maxSize
 ) 
 
 cars.sample <- dbGetQuery(conn, sample_HQL)
