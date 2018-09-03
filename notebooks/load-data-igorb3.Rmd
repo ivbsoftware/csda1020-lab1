@@ -1,5 +1,5 @@
 ---
-title: "Classified Ads for Cars Datatset Analysis"
+title: "Classified Ads for Cars Dataset Analysis"
 output: github_document
 ---
 
@@ -60,12 +60,32 @@ options(xtable.timestamp = "")
 options(xtable.comment = FALSE)
 
 dbSendUpdate(conn, "USE used_cars")
-tb <- dbGetQuery(conn, "select * from events limit 30")
-print(xtable(tb), type = "html", scalebox=.5)
-dbDisconnect(conn)
+
+cars <- dbGetQuery(conn, "select * from events limit 10")
+colnames(cars) <- c(
+  "maker", "model","mileage","year", "disp", "pwr", "body", "color", "stk", 
+  "trans", "doors", "seats",  "fuel", "listed", "unlisted", "price")
+
+print(xtable(cars), 
+      caption="Classified Ads for Cars Dataset",
+      type = "html", 
+      include.rownames=FALSE, 
+      caption.placement='top',
+      html.table.attributes='align="left"')
 ```
 
+```{r results='asis'}
+library(knitr)
+kable(cars, digits=2)
+```
+
+
 ```{r}
-# descr <- dbGetQuery(conn, "describe events")
-# descr
+descr <- dbGetQuery(conn, "describe events")
+kable(descr)
+```
+
+
+```{r}
+dbDisconnect(conn)
 ```

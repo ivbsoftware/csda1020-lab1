@@ -1,4 +1,4 @@
-Classified Ads for Cars Datatset Analysis
+Classified Ads for Cars Dataset Analysis
 ================
 
 ## Connecting to HIVE runnubg on Hortonworks Sandbox VM
@@ -30,123 +30,123 @@ options(xtable.timestamp = "")
 options(xtable.comment = FALSE)
 
 dbSendUpdate(conn, "USE used_cars")
-tb <- dbGetQuery(conn, "select * from events limit 30")
-print(xtable(tb), type = "html", scalebox=.5)
+
+cars <- dbGetQuery(conn, "select * from events limit 10")
+colnames(cars) <- c(
+  "maker", "model","mileage","year", "disp", "pwr", "body", "color", "stk", 
+  "trans", "doors", "seats",  "fuel", "listed", "unlisted", "euro")
+
+print(xtable(cars), 
+      caption="Classified Ads for Cars Dataset",
+      type = "html", 
+      include.rownames=FALSE, 
+      caption.placement='top',
+      html.table.attributes='align="left"')
 ```
 
-<table border="1">
+<table>
 
 <tr>
 
 <th>
 
-</th>
-
-<th>
-
-events.maker
+maker
 
 </th>
 
 <th>
 
-events.model
+model
 
 </th>
 
 <th>
 
-events.mileage
+mileage
 
 </th>
 
 <th>
 
-events.manufacture\_year
+year
 
 </th>
 
 <th>
 
-events.engine\_displacement
+disp
 
 </th>
 
 <th>
 
-events.engine\_power
+pwr
 
 </th>
 
 <th>
 
-events.body\_type
+body
 
 </th>
 
 <th>
 
-events.color\_slug
+color
 
 </th>
 
 <th>
 
-events.stk\_year
+stk
 
 </th>
 
 <th>
 
-events.transmission
+trans
 
 </th>
 
 <th>
 
-events.door\_count
+doors
 
 </th>
 
 <th>
 
-events.seat\_count
+seats
 
 </th>
 
 <th>
 
-events.fuel\_type
+fuel
 
 </th>
 
 <th>
 
-events.date\_created
+listed
 
 </th>
 
 <th>
 
-events.date\_last\_seen
+unlisted
 
 </th>
 
 <th>
 
-events.price\_eur
+euro
 
 </th>
 
 </tr>
 
 <tr>
-
-<td align="right">
-
-1
-
-</td>
 
 <td>
 
@@ -244,12 +244,6 @@ diesel
 
 <tr>
 
-<td align="right">
-
-2
-
-</td>
-
 <td>
 
 skoda
@@ -346,12 +340,6 @@ diesel
 
 <tr>
 
-<td align="right">
-
-3
-
-</td>
-
 <td>
 
 bmw
@@ -445,12 +433,6 @@ diesel
 </tr>
 
 <tr>
-
-<td align="right">
-
-4
-
-</td>
 
 <td>
 
@@ -548,12 +530,6 @@ gasoline
 
 <tr>
 
-<td align="right">
-
-5
-
-</td>
-
 <td>
 
 skoda
@@ -649,12 +625,6 @@ gasoline
 </tr>
 
 <tr>
-
-<td align="right">
-
-6
-
-</td>
 
 <td>
 
@@ -752,12 +722,6 @@ gasoline
 
 <tr>
 
-<td align="right">
-
-7
-
-</td>
-
 <td>
 
 skoda
@@ -854,12 +818,6 @@ gasoline
 
 <tr>
 
-<td align="right">
-
-8
-
-</td>
-
 <td>
 
 bmw
@@ -953,12 +911,6 @@ diesel
 </tr>
 
 <tr>
-
-<td align="right">
-
-9
-
-</td>
 
 <td>
 
@@ -1056,12 +1008,6 @@ diesel
 
 <tr>
 
-<td align="right">
-
-10
-
-</td>
-
 <td>
 
 </td>
@@ -1152,2029 +1098,52 @@ diesel
 
 </tr>
 
-<tr>
-
-<td align="right">
-
-11
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td align="right">
-
-202136.00
-
-</td>
-
-<td align="right">
-
-2002.00
-
-</td>
-
-<td align="right">
-
-1400.00
-
-</td>
-
-<td align="right">
-
-55.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-gasoline
-
-</td>
-
-<td>
-
-2015-11-14 18:10:06.962
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-740.19
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-12
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td align="right">
-
-263840.00
-
-</td>
-
-<td align="right">
-
-1998.00
-
-</td>
-
-<td align="right">
-
-1900.00
-
-</td>
-
-<td align="right">
-
-81.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-diesel
-
-</td>
-
-<td>
-
-2015-11-14 18:10:06.993
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-999.26
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-13
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td align="right">
-
-105394.00
-
-</td>
-
-<td align="right">
-
-2000.00
-
-</td>
-
-<td align="right">
-
-1360.00
-
-</td>
-
-<td align="right">
-
-55.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-3.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-gasoline
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.036
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-1665.43
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-14
-
-</td>
-
-<td>
-
-skoda
-
-</td>
-
-<td>
-
-favorit
-
-</td>
-
-<td align="right">
-
-41250.00
-
-</td>
-
-<td align="right">
-
-1990.00
-
-</td>
-
-<td align="right">
-
-1300.00
-
-</td>
-
-<td align="right">
-
-44.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-gasoline
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.051
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-370.10
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-15
-
-</td>
-
-<td>
-
-suzuki
-
-</td>
-
-<td>
-
-swift
-
-</td>
-
-<td align="right">
-
-122100.00
-
-</td>
-
-<td align="right">
-
-2003.00
-
-</td>
-
-<td align="right">
-
-1000.00
-
-</td>
-
-<td align="right">
-
-39.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-gasoline
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.116
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-999.26
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-16
-
-</td>
-
-<td>
-
-nissan
-
-</td>
-
-<td>
-
-x-trail
-
-</td>
-
-<td align="right">
-
-149465.00
-
-</td>
-
-<td align="right">
-
-2005.00
-
-</td>
-
-<td align="right">
-
-2500.00
-
-</td>
-
-<td align="right">
-
-121.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-auto
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-gasoline
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.484
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-4811.25
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-17
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td align="right">
-
-115879.00
-
-</td>
-
-<td align="right">
-
-2003.00
-
-</td>
-
-<td align="right">
-
-1900.00
-
-</td>
-
-<td align="right">
-
-88.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-diesel
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.571
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-2220.58
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-18
-
-</td>
-
-<td>
-
-opel
-
-</td>
-
-<td>
-
-astra
-
-</td>
-
-<td align="right">
-
-316054.00
-
-</td>
-
-<td align="right">
-
-2005.00
-
-</td>
-
-<td align="right">
-
-1700.00
-
-</td>
-
-<td align="right">
-
-74.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-diesel
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.585
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-2331.61
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-19
-
-</td>
-
-<td>
-
-skoda
-
-</td>
-
-<td>
-
-superb
-
-</td>
-
-<td align="right">
-
-269398.00
-
-</td>
-
-<td align="right">
-
-2005.00
-
-</td>
-
-<td align="right">
-
-1900.00
-
-</td>
-
-<td align="right">
-
-96.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-4.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-diesel
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.599
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-4663.21
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-20
-
-</td>
-
-<td>
-
-skoda
-
-</td>
-
-<td>
-
-fabia
-
-</td>
-
-<td align="right">
-
-87257.00
-
-</td>
-
-<td align="right">
-
-2008.00
-
-</td>
-
-<td align="right">
-
-1200.00
-
-</td>
-
-<td align="right">
-
-44.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-gasoline
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.627
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-4219.10
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-21
-
-</td>
-
-<td>
-
-skoda
-
-</td>
-
-<td>
-
-fabia
-
-</td>
-
-<td align="right">
-
-130340.00
-
-</td>
-
-<td align="right">
-
-2001.00
-
-</td>
-
-<td align="right">
-
-1400.00
-
-</td>
-
-<td align="right">
-
-50.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-gasoline
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.638
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-2442.64
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-22
-
-</td>
-
-<td>
-
-ford
-
-</td>
-
-<td>
-
-focus
-
-</td>
-
-<td align="right">
-
-227415.00
-
-</td>
-
-<td align="right">
-
-2002.00
-
-</td>
-
-<td align="right">
-
-1800.00
-
-</td>
-
-<td align="right">
-
-85.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-diesel
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.648
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-2146.56
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-23
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td align="right">
-
-229642.00
-
-</td>
-
-<td align="right">
-
-2002.00
-
-</td>
-
-<td align="right">
-
-1900.00
-
-</td>
-
-<td align="right">
-
-75.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-diesel
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.672
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-2220.58
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-24
-
-</td>
-
-<td>
-
-ford
-
-</td>
-
-<td>
-
-fiesta
-
-</td>
-
-<td align="right">
-
-84476.00
-
-</td>
-
-<td align="right">
-
-1997.00
-
-</td>
-
-<td align="right">
-
-1300.00
-
-</td>
-
-<td align="right">
-
-44.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-gasoline
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.683
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-740.19
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-25
-
-</td>
-
-<td>
-
-citroen
-
-</td>
-
-<td>
-
-c4-picasso
-
-</td>
-
-<td align="right">
-
-112313.00
-
-</td>
-
-<td align="right">
-
-2007.00
-
-</td>
-
-<td align="right">
-
-1700.00
-
-</td>
-
-<td align="right">
-
-92.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-7.00
-
-</td>
-
-<td>
-
-gasoline
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.694
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-7105.85
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-26
-
-</td>
-
-<td>
-
-seat
-
-</td>
-
-<td>
-
-ibiza
-
-</td>
-
-<td align="right">
-
-86484.00
-
-</td>
-
-<td align="right">
-
-2007.00
-
-</td>
-
-<td align="right">
-
-1200.00
-
-</td>
-
-<td align="right">
-
-51.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-gasoline
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.729
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-3700.96
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-27
-
-</td>
-
-<td>
-
-kia
-
-</td>
-
-<td>
-
-</td>
-
-<td align="right">
-
-19400.00
-
-</td>
-
-<td align="right">
-
-2014.00
-
-</td>
-
-<td align="right">
-
-1400.00
-
-</td>
-
-<td align="right">
-
-73.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-gasoline
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.742
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-10917.84
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-28
-
-</td>
-
-<td>
-
-audi
-
-</td>
-
-<td>
-
-a6
-
-</td>
-
-<td align="right">
-
-207427.00
-
-</td>
-
-<td align="right">
-
-2007.00
-
-</td>
-
-<td align="right">
-
-2700.00
-
-</td>
-
-<td align="right">
-
-132.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-auto
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-diesel
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.751
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-8882.31
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-29
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td align="right">
-
-44971.00
-
-</td>
-
-<td align="right">
-
-2011.00
-
-</td>
-
-<td align="right">
-
-1400.00
-
-</td>
-
-<td align="right">
-
-54.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td align="right">
-
-5.00
-
-</td>
-
-<td>
-
-gasoline
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.761
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-6291.64
-
-</td>
-
-</tr>
-
-<tr>
-
-<td align="right">
-
-30
-
-</td>
-
-<td>
-
-suzuki
-
-</td>
-
-<td>
-
-swift
-
-</td>
-
-<td align="right">
-
-113175.00
-
-</td>
-
-<td align="right">
-
-2013.00
-
-</td>
-
-<td align="right">
-
-1600.00
-
-</td>
-
-<td align="right">
-
-100.00
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-</td>
-
-<td>
-
-None
-
-</td>
-
-<td>
-
-man
-
-</td>
-
-<td align="right">
-
-3.00
-
-</td>
-
-<td align="right">
-
-4.00
-
-</td>
-
-<td>
-
-gasoline
-
-</td>
-
-<td>
-
-2015-11-14 18:10:07.784
-
-</td>
-
-<td>
-
-2016-01-27 20:40:15.463
-
-</td>
-
-<td align="right">
-
-7401.92
-
-</td>
-
-</tr>
-
 </table>
+
+``` r
+library(knitr)
+kable(cars, digits=2)
+```
+
+| maker | model   | mileage | year | disp | pwr | body | color | stk  | trans | doors | seats | fuel     | listed                  | unlisted                |     euro |
+| :---- | :------ | ------: | ---: | ---: | --: | :--- | :---- | :--- | :---- | ----: | ----: | :------- | :---------------------- | :---------------------- | -------: |
+| ford  | galaxy  |  151000 | 2011 | 2000 | 103 |      |       | None | man   |     5 |     7 | diesel   | 2015-11-14 18:10:06.838 | 2016-01-27 20:40:15.463 | 10584.75 |
+| skoda | octavia |  143476 | 2012 | 2000 |  81 |      |       | None | man   |     5 |     5 | diesel   | 2015-11-14 18:10:06.853 | 2016-01-27 20:40:15.463 |  8882.31 |
+| bmw   |         |   97676 | 2010 | 1995 |  85 |      |       | None | man   |     5 |     5 | diesel   | 2015-11-14 18:10:06.861 | 2016-01-27 20:40:15.463 | 12065.06 |
+| skoda | fabia   |  111970 | 2004 | 1200 |  47 |      |       | None | man   |     5 |     5 | gasoline | 2015-11-14 18:10:06.872 | 2016-01-27 20:40:15.463 |  2960.77 |
+| skoda | fabia   |  128886 | 2004 | 1200 |  47 |      |       | None | man   |     5 |     5 | gasoline | 2015-11-14 18:10:06.88  | 2016-01-27 20:40:15.463 |  2738.71 |
+| skoda | fabia   |  140932 | 2003 | 1200 |  40 |      |       | None | man   |     5 |     5 | gasoline | 2015-11-14 18:10:06.894 | 2016-01-27 20:40:15.463 |  1628.42 |
+| skoda | fabia   |  167220 | 2001 | 1400 |  74 |      |       | None | man   |     5 |     5 | gasoline | 2015-11-14 18:10:06.915 | 2016-01-27 20:40:15.463 |  2072.54 |
+| bmw   |         |  148500 | 2009 | 2000 | 130 |      |       | None | auto  |     5 |     5 | diesel   | 2015-11-14 18:10:06.924 | 2016-01-27 20:40:15.463 | 10547.74 |
+| skoda | octavia |  105389 | 2003 | 1900 |  81 |      |       | None | man   |     5 |     5 | diesel   | 2015-11-14 18:10:06.936 | 2016-01-27 20:40:15.463 |  4293.12 |
+|       |         |  301381 | 2002 | 1900 |  88 |      |       | None | man   |     5 |     5 | diesel   | 2015-11-14 18:10:06.954 | 2016-01-27 20:40:15.463 |  1332.35 |
+
+``` r
+descr <- dbGetQuery(conn, "describe events")
+kable(descr)
+```
+
+| col\_name            | data\_type    | comment |
+| :------------------- | :------------ | :------ |
+| maker                | string        |         |
+| model                | string        |         |
+| mileage              | int           |         |
+| manufacture\_year    | int           |         |
+| engine\_displacement | int           |         |
+| engine\_power        | int           |         |
+| body\_type           | string        |         |
+| color\_slug          | string        |         |
+| stk\_year            | string        |         |
+| transmission         | string        |         |
+| door\_count          | int           |         |
+| seat\_count          | int           |         |
+| fuel\_type           | string        |         |
+| date\_created        | timestamp     |         |
+| date\_last\_seen     | timestamp     |         |
+| price\_eur           | decimal(13,2) |         |
 
 ``` r
 dbDisconnect(conn)
 ```
 
-\[1\] TRUE
-
-``` r
-# descr <- dbGetQuery(conn, "describe events")
-# descr
-```
+    ## [1] TRUE
