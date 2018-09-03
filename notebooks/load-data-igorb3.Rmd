@@ -4,10 +4,21 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+library(knitr)
+```
+```{r message=FALSE, warning=FALSE}
+set.seed(42)
+library(ggplot2)
+library(reshape2)
+library(plyr)
+library(readr)
+library(fpc)
+library(data.table)
+library(ggplot2)
 ```
 
-## Connecting to HIVE runnubg on Hortonworks Sandbox VM
+## Connecting to USED_CARS database in HIVE running on Hortonworks Sandbox VM
 
 ```
 options( java.parameters = "-Xmx8g" )
@@ -24,9 +35,6 @@ drv <- JDBC(driverClass = "org.apache.hive.jdbc.HiveDriver",
  
 conn <- dbConnect(drv, "jdbc:hive2://127.0.0.1:10000/used_cars", "maria_dev", "maria_dev")
 ```
-
-## Discover the used_cars database
-
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 options( java.parameters = "-Xmx8g" )
@@ -42,49 +50,89 @@ drv <- JDBC(driverClass = "org.apache.hive.jdbc.HiveDriver",
              identifier.quote="`")
  
 conn <- dbConnect(drv, "jdbc:hive2://127.0.0.1:10000/used_cars", "maria_dev", "maria_dev")
-
-```
-
-## Discover the used_cars database
-
-Events table size and head:
-
-```{r eval=FALSE, include=FALSE}
-# dbGetQuery(conn, "select count (*) from events")
-```
-
-```{r results='asis'}
-library(xtable)
-options(xtable.floating = TRUE)
-options(xtable.timestamp = "")
-options(xtable.comment = FALSE)
-
 dbSendUpdate(conn, "USE used_cars")
 
-cars <- dbGetQuery(conn, "select * from events limit 10")
-colnames(cars) <- c(
-  "maker", "model","mileage","year", "disp", "pwr", "body", "color", "stk", 
-  "trans", "doors", "seats",  "fuel", "listed", "unlisted", "price")
-
-print(xtable(cars), 
-      caption="Classified Ads for Cars Dataset",
-      type = "html", 
-      include.rownames=FALSE, 
-      caption.placement='top',
-      html.table.attributes='align="left"')
 ```
 
-```{r results='asis'}
-library(knitr)
-kable(cars, digits=2)
-```
+## Discover the USED_CARS database
 
+First we are getting the EVENTS table description. Full description of the attributes presented on [Classified Ads for Cars](https://www.kaggle.com/mirosval/personal-cars-classifieds/home) home page.
 
 ```{r}
 descr <- dbGetQuery(conn, "describe events")
 kable(descr)
 ```
 
+Code below selecting first 10 rows for EVENTS table and saves them to 'cars' dataframe. Note that we rename cars columns for better presentation. Also note that it looks that the dataset has some missing values.
+
+```{r results='asis'}
+cars <- dbGetQuery(conn, "select * from events limit 6")
+colnames(cars) <- c(
+  "Maker", "Model","Mileage","Year", "Disp", "Pwr", "Body", "Color", "Sticker", 
+  "Trans", "Doors", "Seats", "Fuel", "Listed", "Removed", "Price")
+```
+
+```{r results='asis'}
+kable(cars)
+```
+
+The EVENTS table has 3,552,912 records which could be confirmed by running the HQL statement below.
+
+```
+dbGetQuery(conn, "select count (*) from events")
+```
+```{r eval=FALSE, include=FALSE}
+# dbGetQuery(conn, "select count (*) from events")
+```
+
+For the analysis we will extract not more than 20K rows from EVENT table randomly using the HQL statement below. We skip the rows mising one of the folloowing important attributes: maker, model, mileage, manufacture_year or price_eur. As we can see, we had only 11431 samples complying to this condition:
+
+```{r}
+lim <- 20000/3552912
+
+sample_HQL <- paste(
+  "select * from events",
+    " WHERE",
+      " rand(123) <= ", lim,
+      " AND maker <> '' AND model <> '' AND mileage is not NULL AND manufacture_year is not NULL",
+      " AND price_eur is not NULL",
+  " limit 20000"
+) 
+
+cars.sample <- dbGetQuery(conn, sample_HQL)
+colnames(cars.sample) <- c(
+  "Maker", "Model","Mileage","Year", "Disp", "Pwr", "Body", "Color", "Sticker", 
+  "Trans", "Doors", "Seats", "Fuel", "Listed", "Removed", "Price")
+
+nrow(cars.sample)
+```
+
+```{r results='asis'}
+kable(head(cars.sample))
+```
+
+```{r}
+summary(cars.sample)
+```
+
+
+```{r hist_1, fig.pos = 'h', fig.height=8, fig.width=5.5, fig.align="center", fig.cap="Number of Ads by Maker"}
+require(forcats)
+total <- nrow(cars.sample)
+ggplot(cars.sample, aes(fct_rev(fct_infreq(Maker)))) +
+       geom_bar() + 
+       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 75)+
+#       theme(axis.text.x = element_text(angle =90 , hjust = 1, vjust = 0.5)) +
+       labs(x="", y="Percent of Ads in the Sample Set") +
+#       scale_y_log10(breaks = c(1, 2, 5, 10, 25, 50, 100, 250, 500, 1000)) +
+        scale_y_continuous(labels = function(x) sprintf("%.2f%%",x/total*100)) +
+       coord_flip()
+  
+```
+
+## Disconnecting from the HIVE
+
+It is very important to disconnect from the HIVE at the end of the session:
 
 ```{r}
 dbDisconnect(conn)
