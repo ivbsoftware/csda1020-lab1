@@ -87,16 +87,45 @@ dbGetQuery(conn, "select count (*) from events")
 
 For the analysis we will extract not more than 20K rows from EVENT table randomly using the HQL statement below. We skip the rows mising one of the folloowing important attributes: maker, model, mileage, manufacture_year or price_eur. As we can see, we had only 11431 samples complying to this condition:
 
+
 ```{r}
-lim <- 20000/3552912
+# Filters most important attributes
+filter <- paste(
+      " maker <> ''",
+      " AND model <> ''",
+      " AND mileage is not NULL",
+      " AND manufacture_year is not NULL",
+      " AND price_eur is not NULL"
+) 
+
+# Filters the rest of the attributes
+filter2 <- paste(
+      " engine_displacement is not NULL",
+      " AND engine_power is not NULL",
+      " AND body_type <> ''",
+      " AND color_slug <> ''",
+      " AND stk_year <> ''",
+      " AND transmission <> ''",
+      " AND door_count is not NULL",
+      " AND seat_count is not NULL",
+      " AND fuel_type <> ''",
+      " AND date_created is not NULL",
+      " AND date_last_seen is not NULL"
+) 
+
+count <- dbGetQuery(conn, paste("select count(*) from events", " WHERE", filter, " AND", filter2))
+cars.sample.totalFilered <- count$`_c0`
+```
+
+
+```{r}
+car.sample.maxSize <- 20000
+lim <- car.sample.maxSize/cars.sample.totalFilered
 
 sample_HQL <- paste(
-  "select * from events",
-    " WHERE",
-      " rand(123) <= ", lim,
-      " AND maker <> '' AND model <> '' AND mileage is not NULL AND manufacture_year is not NULL",
-      " AND price_eur is not NULL",
-  " limit 20000"
+  "select * from events WHERE", filter, 
+      " AND rand(123) <= ", lim,
+  " limit ", car.sample.maxSize
 ) 
 
 cars.sample <- dbGetQuery(conn, sample_HQL)
@@ -112,7 +141,7 @@ kable(head(cars.sample))
 ```
 
 ```{r}
-summary(cars.sample)
+# summary(cars.sample)
 ```
 
 
@@ -121,11 +150,11 @@ require(forcats)
 total <- nrow(cars.sample)
 ggplot(cars.sample, aes(fct_rev(fct_infreq(Maker)))) +
        geom_bar() + 
-       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 75)+
+       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 120)+
 #       theme(axis.text.x = element_text(angle =90 , hjust = 1, vjust = 0.5)) +
        labs(x="", y="Percent of Ads in the Sample Set") +
 #       scale_y_log10(breaks = c(1, 2, 5, 10, 25, 50, 100, 250, 500, 1000)) +
-        scale_y_continuous(labels = function(x) sprintf("%.2f%%",x/total*100)) +
+        scale_y_continuous(labels = function(x) sprintf("%.0f%%",x/total*100)) +
        coord_flip()
   
 ```
