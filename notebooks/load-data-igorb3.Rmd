@@ -85,7 +85,7 @@ dbGetQuery(conn, "select count (*) from events")
 # dbGetQuery(conn, "select count (*) from events")
 ```
 
-For the analysis we will extract not more than 30K rows from EVENT table randomly using the HQL statement below. We skip the rows mising attributes except for the ones not importants and rarely filled like body_type, color_slug and stk_year:
+For the analysis we will extract not more than 30K rows from EVENT table randomly using the HQL statement below. We skip the rows mising the most important attributes:
 
 ```{r}
 filter <- paste(
@@ -93,14 +93,7 @@ filter <- paste(
       " AND model <> ''",
       " AND mileage is not NULL",
       " AND manufacture_year is not NULL",
-      " AND engine_displacement is not NULL",
-      " AND engine_power is not NULL",
-      " AND transmission <> ''",
-      " AND door_count is not NULL",
-      " AND seat_count is not NULL",
-      " AND fuel_type <> ''",
-      " AND date_created is not NULL",
-      " AND date_last_seen is not NULL"
+      " AND price_eur is not NULL"
 ) 
 count <- dbGetQuery(conn, paste("select count(*) from events", " WHERE", filter))
 cars.sample.totalFilered <- count$`_c0`
@@ -133,19 +126,51 @@ kable(head(cars.sample))
 # summary(cars.sample)
 ```
 
+What is the best selling car maker?
 
 ```{r hist_1, fig.pos = 'h', fig.height=8, fig.width=5.5, fig.align="center", fig.cap="Number of Ads by Maker"}
 require(forcats)
 total <- nrow(cars.sample)
 ggplot(cars.sample, aes(fct_rev(fct_infreq(Maker)))) +
        geom_bar() + 
-       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 120)+
-#       theme(axis.text.x = element_text(angle =90 , hjust = 1, vjust = 0.5)) +
+       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 200)+
        labs(x="", y="Percent of Ads in the Sample Set") +
-#       scale_y_log10(breaks = c(1, 2, 5, 10, 25, 50, 100, 250, 500, 1000)) +
         scale_y_continuous(labels = function(x) sprintf("%.0f%%",x/total*100)) +
        coord_flip()
   
+```
+
+What is the best selling car model?
+
+
+```{r hist_2, fig.pos = 'h', fig.height=8, fig.width=5.5, fig.align="center", fig.cap="40 Best Car Models"}
+require(forcats)
+total <- nrow(cars.sample)
+cars.sample$Car <- paste(cars.sample$Maker, cars.sample$Model)
+betsCarsList <- fct_infreq(cars.sample$Car)
+cars.sample.bestCars <- cars.sample[cars.sample$Car %in%  levels(betsCarsList)[1:40],]
+ggplot(cars.sample.bestCars, aes(fct_rev(fct_infreq(Car)))) +
+       geom_bar() + 
+       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 75)+
+       labs(x="", y="Percent of Ads in the Sample Set") +
+       scale_y_continuous(labels = function(x) sprintf("%.0f%%",x/total*100)) + 
+      coord_flip()
+```
+
+What is the best selling car?
+
+```{r hist_3, fig.pos = 'h', fig.height=4.5, fig.width=5.5, fig.align="center", fig.cap="20 Best Cars"}
+require(forcats)
+total <- nrow(cars.sample)
+cars.sample$Car1 <- paste(cars.sample$Maker, cars.sample$Model, cars.sample$Year)
+betsCarsList <- fct_infreq(cars.sample$Car1)
+cars.sample.bestCars <- cars.sample[cars.sample$Car1 %in%  levels(betsCarsList)[1:20],]
+ggplot(cars.sample.bestCars, aes(fct_rev(fct_infreq(Car1)))) +
+       geom_bar() + 
+       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 10)+
+       labs(x="", y="Percent of Ads in the Sample Set") +
+       scale_y_continuous(labels = function(x) sprintf("%.2f%%",x/total*100)) + 
+      coord_flip()
 ```
 
 ## Disconnecting from the HIVE

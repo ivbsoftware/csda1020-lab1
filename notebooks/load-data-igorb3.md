@@ -90,9 +90,8 @@ running the HQL statement below.
     dbGetQuery(conn, "select count (*) from events")
 
 For the analysis we will extract not more than 30K rows from EVENT table
-randomly using the HQL statement below. We skip the rows mising
-attributes except for the ones not importants and rarely filled like
-body\_type, color\_slug and stk\_year:
+randomly using the HQL statement below. We skip the rows mising the most
+important attributes:
 
 ``` r
 filter <- paste(
@@ -100,14 +99,7 @@ filter <- paste(
       " AND model <> ''",
       " AND mileage is not NULL",
       " AND manufacture_year is not NULL",
-      " AND engine_displacement is not NULL",
-      " AND engine_power is not NULL",
-      " AND transmission <> ''",
-      " AND door_count is not NULL",
-      " AND seat_count is not NULL",
-      " AND fuel_type <> ''",
-      " AND date_created is not NULL",
-      " AND date_last_seen is not NULL"
+      " AND price_eur is not NULL"
 ) 
 count <- dbGetQuery(conn, paste("select count(*) from events", " WHERE", filter))
 cars.sample.totalFilered <- count$`_c0`
@@ -131,39 +123,75 @@ colnames(cars.sample) <- c(
 nrow(cars.sample)
 ```
 
-    ## [1] 29725
+    ## [1] 29958
 
 ``` r
 kable(head(cars.sample))
 ```
 
-| Maker   | Model  | Mileage | Year | Disp | Pwr | Body | Color | Sticker | Trans | Doors | Seats | Fuel     | Listed                  | Removed                 |    Price |
-| :------ | :----- | ------: | ---: | ---: | --: | :--- | :---- | :------ | :---- | ----: | ----: | :------- | :---------------------- | :---------------------- | -------: |
-| skoda   | fabia  |  130340 | 2001 | 1400 |  50 |      |       | None    | man   |     5 |     5 | gasoline | 2015-11-14 18:10:07.638 | 2016-01-27 20:40:15.463 |  2442.64 |
-| skoda   | fabia  |   87777 | 2005 | 1400 |  51 |      |       | None    | man   |     5 |     5 | diesel   | 2015-11-14 18:10:08.414 | 2016-01-27 20:40:15.463 |  3256.85 |
-| ford    | mondeo |  164867 | 2012 | 2000 | 120 |      |       | None    | man   |     5 |     5 | diesel   | 2015-11-14 18:10:08.693 | 2016-01-27 20:40:15.463 | 11102.89 |
-| citroen | c5     |  126500 | 2006 | 1600 |  80 |      |       | None    | man   |     5 |     5 | diesel   | 2015-11-14 18:10:08.737 | 2016-01-27 20:40:15.463 |  3256.85 |
-| skoda   | fabia  |    7993 | 2015 | 1200 |  81 |      |       | None    | man   |     5 |     5 | gasoline | 2015-11-14 18:54:14.7   | 2016-01-27 20:40:15.463 | 11102.89 |
-| hyundai | ix20   |   23196 | 2013 | 1400 |  66 |      |       | None    | man   |     5 |     5 | gasoline | 2015-11-14 18:54:16.114 | 2016-01-27 20:40:15.463 |  9807.55 |
+| Maker | Model    | Mileage | Year | Disp | Pwr | Body | Color | Sticker | Trans | Doors | Seats | Fuel     | Listed                  | Removed                 |   Price |
+| :---- | :------- | ------: | ---: | ---: | --: | :--- | :---- | :------ | :---- | ----: | ----: | :------- | :---------------------- | :---------------------- | ------: |
+| skoda | citigo   |   10349 | 2014 | 1000 |  44 |      |       | None    | auto  |     5 |     4 | gasoline | 2015-11-14 18:54:16.065 | 2016-01-27 20:40:15.463 | 8142.12 |
+| fiat  | marea    |  300017 | 2000 | 1581 |  76 |      |       | None    | man   |     5 |     5 | gasoline | 2015-11-14 18:55:23.485 | 2016-01-27 20:40:15.463 |  736.49 |
+| skoda | octavia  |  145665 | 2003 | 1595 |  75 |      |       | None    | man   |     5 |     5 | gasoline | 2015-11-14 18:55:29.401 | 2016-01-27 20:40:15.463 | 4276.65 |
+| skoda | citigo   |    9800 | 2015 |  999 |  44 |      |       | None    | man   |     5 |     4 | gasoline | 2015-11-14 18:55:33.465 | 2016-01-27 20:40:15.463 | 7768.32 |
+| kia   | sportage |       1 | 2001 | 1998 |  61 |      |       | None    | man   |     5 |     5 | diesel   | 2015-11-14 18:55:35.467 | 2016-01-27 20:40:15.463 | 1813.47 |
+| skoda | superb   |  234000 | 2002 | 1900 |  96 |      |       | None    |       |     4 |     5 | diesel   | 2015-11-14 18:55:35.74  | 2016-01-27 20:40:15.463 | 3293.86 |
 
 ``` r
 # summary(cars.sample)
 ```
+
+What is the best selling car maker?
 
 ``` r
 require(forcats)
 total <- nrow(cars.sample)
 ggplot(cars.sample, aes(fct_rev(fct_infreq(Maker)))) +
        geom_bar() + 
-       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 120)+
-#       theme(axis.text.x = element_text(angle =90 , hjust = 1, vjust = 0.5)) +
+       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 200)+
        labs(x="", y="Percent of Ads in the Sample Set") +
-#       scale_y_log10(breaks = c(1, 2, 5, 10, 25, 50, 100, 250, 500, 1000)) +
         scale_y_continuous(labels = function(x) sprintf("%.0f%%",x/total*100)) +
        coord_flip()
 ```
 
 <img src="load-data-igorb3_files/figure-gfm/hist_1-1.png" title="Number of Ads by Maker" alt="Number of Ads by Maker" style="display: block; margin: auto;" />
+
+What is the best selling car model?
+
+``` r
+require(forcats)
+total <- nrow(cars.sample)
+cars.sample$Car <- paste(cars.sample$Maker, cars.sample$Model)
+betsCarsList <- fct_infreq(cars.sample$Car)
+cars.sample.bestCars <- cars.sample[cars.sample$Car %in%  levels(betsCarsList)[1:40],]
+ggplot(cars.sample.bestCars, aes(fct_rev(fct_infreq(Car)))) +
+       geom_bar() + 
+       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 75)+
+       labs(x="", y="Percent of Ads in the Sample Set") +
+       scale_y_continuous(labels = function(x) sprintf("%.0f%%",x/total*100)) + 
+      coord_flip()
+```
+
+<img src="load-data-igorb3_files/figure-gfm/hist_2-1.png" title="40 Best Car Models" alt="40 Best Car Models" style="display: block; margin: auto;" />
+
+What is the best selling car?
+
+``` r
+require(forcats)
+total <- nrow(cars.sample)
+cars.sample$Car1 <- paste(cars.sample$Maker, cars.sample$Model, cars.sample$Year)
+betsCarsList <- fct_infreq(cars.sample$Car1)
+cars.sample.bestCars <- cars.sample[cars.sample$Car1 %in%  levels(betsCarsList)[1:20],]
+ggplot(cars.sample.bestCars, aes(fct_rev(fct_infreq(Car1)))) +
+       geom_bar() + 
+       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 10)+
+       labs(x="", y="Percent of Ads in the Sample Set") +
+       scale_y_continuous(labels = function(x) sprintf("%.2f%%",x/total*100)) + 
+      coord_flip()
+```
+
+<img src="load-data-igorb3_files/figure-gfm/hist_3-1.png" title="20 Best Cars" alt="20 Best Cars" style="display: block; margin: auto;" />
 
 ## Disconnecting from the HIVE
 
