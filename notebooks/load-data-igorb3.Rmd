@@ -58,21 +58,15 @@ dbSendUpdate(conn, "USE used_cars")
 
 First we are getting the EVENTS table description. Full description of the attributes presented on [Classified Ads for Cars](https://www.kaggle.com/mirosval/personal-cars-classifieds/home) home page.
 
-```{r}
+```
 descr <- dbGetQuery(conn, "describe events")
 kable(descr)
 ```
 
 Code below selecting first 10 rows for EVENTS table and saves them to 'cars' dataframe. Note that we rename cars columns for better presentation. Also note that it looks that the dataset has some missing values.
 
-```{r results='asis'}
+```{r}
 cars <- dbGetQuery(conn, "select * from events limit 6")
-colnames(cars) <- c(
-  "Maker", "Model","Mileage","Year", "Disp", "Pwr", "Body", "Color", "Sticker", 
-  "Trans", "Doors", "Seats", "Fuel", "Listed", "Removed", "Price")
-```
-
-```{r results='asis'}
 kable(cars)
 ```
 
@@ -81,13 +75,10 @@ The EVENTS table has 3,552,912 records which could be confirmed by running the H
 ```
 dbGetQuery(conn, "select count (*) from events")
 ```
-```{r eval=FALSE, include=FALSE}
-# dbGetQuery(conn, "select count (*) from events")
-```
 
 For the analysis we will extract not more than 30K rows from EVENT table randomly using the HQL statement below. We skip the rows mising the most important attributes:
 
-```{r}
+```
 filter <- paste(
       " maker <> ''",
       " AND model <> ''",
@@ -99,15 +90,14 @@ count <- dbGetQuery(conn, paste("select count(*) from events", " WHERE", filter)
 cars.sample.totalFilered <- count$`_c0`
 ```
 
-
-```{r}
+```
 car.sample.maxSize <- 30000
 lim <- car.sample.maxSize/cars.sample.totalFilered
 
 sample_HQL <- paste(
   "select * from events WHERE", filter,
       " AND rand(123) < ", lim,
-  " limit ", 1.2 * car.sample.maxSize
+  " limit ", car.sample.maxSize
 ) 
 
 cars.sample <- dbGetQuery(conn, sample_HQL)
@@ -115,8 +105,60 @@ colnames(cars.sample) <- c(
   "Maker", "Model","Mileage","Year", "Disp", "Pwr", "Body", "Color", "Sticker", 
   "Trans", "Doors", "Seats", "Fuel", "Listed", "Removed", "Price")
 
+```
+
+```{r include=FALSE}
+cars.sample <- read.csv("../data/cars.sample.csv")
+colnames(cars.sample) <- c(
+  "Id","Maker", "Model","Mileage","Year", "Disp", "Pwr", "Body", "Color", "Sticker", 
+  "Trans", "Doors", "Seats", "Fuel", "Listed", "Removed", "Price")
+cars.sample$Id <- NULL
+```
+
+
+```{r}
+
 nrow(cars.sample)
 ```
+
+Creating additional columns for analysis
+
+```{r}
+cars.sample$ListedTS <- strptime(cars.sample$Listed, '%Y-%m-%d %H:%M:%OS')
+cars.sample$RemovedTS <- strptime(cars.sample$Removed, '%Y-%m-%d %H:%M:%OS')
+
+cars.sample$Age <- as.integer(ceiling(
+  difftime(cars.sample$ListedTS, strptime(cars.sample$Year,'%Y'), units = "days")/365))
+
+cars.sample$DaysListed <- as.integer(ceiling(
+  difftime(cars.sample$RemovedTS, cars.sample$ListedTS, units = "days")))
+```
+
+How long the cars are usually listed?
+
+```{r}
+ggplot(cars.sample, aes(x=DaysListed)) + 
+  geom_density(fill="#FF6666", alpha=.1) +
+  geom_vline(aes(xintercept=42), color="blue", linetype="dashed", size=1) +
+  geom_vline(aes(xintercept=60), color="red", linetype="dashed", size=1)
+```
+
+Let's consider cars listed less than 42 days (6 weeks) to be sold
+
+```{r}
+cars.sample$Sold <- cars.sample$DaysListed <= 42
+```
+
+What is the distribition of advertized cars age?
+
+```{r}
+ggplot(cars.sample, aes(x=Age)) + 
+  geom_density(fill="#FF6666", alpha=.1) +
+  scale_x_continuous(limits = c(0, 30))+
+    geom_vline(aes(xintercept=mean(Age, na.rm=T)),
+               color="green", linetype="dashed", size=1)
+```
+
 
 ```{r results='asis'}
 kable(head(cars.sample))
@@ -126,38 +168,35 @@ kable(head(cars.sample))
 # summary(cars.sample)
 ```
 
-What is the best selling car maker?
+What is the most advertized vs sold car maker?
 
 ```{r hist_1, fig.pos = 'h', fig.height=8, fig.width=5.5, fig.align="center", fig.cap="Number of Ads by Maker"}
 require(forcats)
 total <- nrow(cars.sample)
-ggplot(cars.sample, aes(fct_rev(fct_infreq(Maker)))) +
-       geom_bar() + 
-       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 200)+
-       labs(x="", y="Percent of Ads in the Sample Set") +
+ggplot(cars.sample, aes(fct_rev(fct_infreq(Maker)), fill=Sold)) +
+       geom_bar() +
+       labs(x="", y="Percent of Ads") +
         scale_y_continuous(labels = function(x) sprintf("%.0f%%",x/total*100)) +
        coord_flip()
   
 ```
 
-What is the best selling car model?
+What is the 20 best advertived vs sold car models?
 
-
-```{r hist_2, fig.pos = 'h', fig.height=8, fig.width=5.5, fig.align="center", fig.cap="40 Best Car Models"}
+```{r hist_2, fig.pos = 'h', fig.height=4.5, fig.width=5.5, fig.align="center", fig.cap="40 Best Car Models"}
 require(forcats)
 total <- nrow(cars.sample)
 cars.sample$Car <- paste(cars.sample$Maker, cars.sample$Model)
 betsCarsList <- fct_infreq(cars.sample$Car)
-cars.sample.bestCars <- cars.sample[cars.sample$Car %in%  levels(betsCarsList)[1:40],]
-ggplot(cars.sample.bestCars, aes(fct_rev(fct_infreq(Car)))) +
+cars.sample.bestCars <- cars.sample[cars.sample$Car %in%  levels(betsCarsList)[1:20],]
+ggplot(cars.sample.bestCars, aes(fct_rev(fct_infreq(Car)), fill=Sold)) +
        geom_bar() + 
-       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 75)+
        labs(x="", y="Percent of Ads in the Sample Set") +
        scale_y_continuous(labels = function(x) sprintf("%.0f%%",x/total*100)) + 
       coord_flip()
 ```
 
-What is the best selling car?
+What is the best 20 advertised vs sold cars?
 
 ```{r hist_3, fig.pos = 'h', fig.height=4.5, fig.width=5.5, fig.align="center", fig.cap="20 Best Cars"}
 require(forcats)
@@ -165,13 +204,31 @@ total <- nrow(cars.sample)
 cars.sample$Car1 <- paste(cars.sample$Maker, cars.sample$Model, cars.sample$Year)
 betsCarsList <- fct_infreq(cars.sample$Car1)
 cars.sample.bestCars <- cars.sample[cars.sample$Car1 %in%  levels(betsCarsList)[1:20],]
-ggplot(cars.sample.bestCars, aes(fct_rev(fct_infreq(Car1)))) +
+ggplot(cars.sample.bestCars, aes(fct_rev(fct_infreq(Car1)), fill=Sold)) +
        geom_bar() + 
-       geom_text(stat = "count", aes(label = ..count.., y = ..count..), nudge_y = 10)+
        labs(x="", y="Percent of Ads in the Sample Set") +
        scale_y_continuous(labels = function(x) sprintf("%.2f%%",x/total*100)) + 
       coord_flip()
 ```
+
+What is the distribution of car prices in the ads for the cars that were not sold?
+
+```{r}
+ggplot(cars.sample[!(cars.sample$Sold),], aes(x=Price)) + 
+  geom_density(fill="#FF6666", alpha=.1) +
+  scale_x_continuous(limits = c(0, 80000)) +
+    geom_vline(aes(xintercept=mean(Price, na.rm=T)), color="red", linetype="dashed", size=1)
+```
+
+What is the distribution of car prices of the cars that were sold?
+
+```{r}
+ggplot(cars.sample[cars.sample$Sold,], aes(x=Price)) + 
+  geom_density(fill="#FF6666", alpha=.1) +
+  scale_x_continuous(limits = c(0, 80000)) +
+    geom_vline(aes(xintercept=mean(Price, na.rm=T)), color="red", linetype="dashed", size=1)
+```
+
 
 ## Disconnecting from the HIVE
 
