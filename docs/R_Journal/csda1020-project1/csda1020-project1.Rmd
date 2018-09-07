@@ -5,7 +5,7 @@ author:
     affiliation   : "York University School of Continuing Studies"
     email         : "https://learn.continue.yorku.ca/user/profile.php?id=21219"
 abstract: >
-  The goal of this project was to apply such big data tools as Hadoop and Hive to load and query the data and prepare it to the analysis. During the analysis the questions like what is the most advertised vs sold cars, car maker and car model vere answered. The dataset was scraped from several websites in Czech Republic and Germany over a period of more than a year. The dataset contains over 3.5 million records and has lots of missing data. 
+  The goal of this project was to apply such big data tools as Hadoop and Hive to load and query the data and prepare it to the analysis. During the analysis the questions like what are the most advertised vs. sold cars, car maker and car model were answered. The dataset was scraped from several websites in Czech Republic and Germany over a period of more than a year. The dataset contains over 3.5 million records and has lots of missing data. 
 output:
   rticles::rjournal_article:
     includes:
@@ -14,15 +14,15 @@ output:
 
 # Introduction
 
-The first goal of the project was to use apache HIVE as an analytic tool to analyze realistic data. Second goal was to acquare experience working with opened end problems, that are similar to real problems that are faced by data professionals. At the end of this project we should gain sufficient confidence in using Hadoop and Apache Hive, get experience in working with large datasets and be aware of the potential and benefits of analyzing large datasets.
+The first goal of the project was to use apache Hive as an analytic tool to analyze realistic data. Second goal was to acquiare experience working with opened end problems that are similar to real problems that are faced by data professionals. At the end of this project we should gain sufficient confidence in using Hadoop and Apache Hive, get experience in working with large datasets and be aware of the potential and benefits of analyzing large datasets.
 
 # Environment Preparation
 
-I have chosen a CentOS Linux - based Virtual Machine provided by Hortonworks. Deployment is available in three isolated environments: virtual machine, container or cloud. There are two sandboxes available: Hortonworks Data Platform (HDP) and Hortonworks DataFlow (HDF).
+A CentOS Linux - based Virtual Machine provided by Hortonworks was chosen for this project. Deployment is available in three isolated environments: virtual machine, container or cloud. There are two sandboxes available: Hortonworks Data Platform (HDP) and Hortonworks DataFlow (HDF).
 
 A virtual machine is a software computer that, like a physical computer, runs an operating system and applications. The virtual machine is backed by the physical resources of a host. Every virtual machine has virtual devices that provide the same functionality as physical hardware and have additional benefits in terms of portability, manageability, and security.
 
-[Hortonworks Sandbox](https://hortonworks.com/tutorial/sandbox-deployment-and-install-guide/)  is a free version of the  Hadoop and Hive  installations. It was installed on Windows 10 Pro workstation having 2xXeon processors configuration and 64GB of RAM.
+[Hortonworks Sandbox](https://hortonworks.com/tutorial/sandbox-deployment-and-install-guide/)  is a free version of the  Hadoop and Hive  installations. It was installed in Oracle Virtual Box manager on Windows 10 workstation that has 2x E5620 Xeon (24-cores) and 64GB RAM configuration.
 
 # Loading Classified Ads for Cars Data to Hadoop
 	
@@ -81,7 +81,7 @@ Copy first line of the file to 'headers' file to use it later for creatin HQL st
 $ head -1 classified-ads-for-cars > headers
 ```
 
-Split the file into 100 chunks and remove headers line from the first file. The number of chunks was taken orbitrary just to make the procedure of loading to HDFS more realistic:
+Split the file into 100 chunks and remove headers line from the first file. The number of chunks was taken arbitrary just to make the procedure of loading to HDFS more realistic:
 
 ```
 $ mkdir chunks
@@ -128,9 +128,9 @@ $ rm -f loaded-files/*
 $ rm -r -f loaded-files
 ```
 
-# Creating HIVE database 
+# Creating Hive database 
 
-HIVE is available in Hortonworks VM entering **hive** command on the bash command line. Here are the steps to create the HIVE database and to load the Cars Ads dataset into it:
+Hive is available in Hortonworks VM entering **hive** command on the bash command line. Here are the steps to create the Hive database and to load the Cars Ads dataset into it:
 
 Create folder **hive** in the home directory for the files and results:
 
@@ -140,7 +140,7 @@ $ mkdir hive
 $ cd hive
 ```
 
-Create text file for HQL script that creates the HIVE database and enter the following HQL text:
+Create text file for HQL script that creates the Hive database and enter the following HQL text:
 
 ```
 $ vi create-db.sql
@@ -153,7 +153,7 @@ CREATE DATABASE
     With dbproperties ('Created by' = 'baranov','Created on' = 'August-2018');
 ```
 
-Create text file for HQL script that creates the HIVE table and enter the following HQL text:
+Create text file for HQL script that creates the Hive table and enter the following HQL text:
 
 ```
 $ vi create-table.sql
@@ -189,7 +189,7 @@ ALTER TABLE used_cars.events
 
 \newpage
 
-Confirm that the HIVE table is created properly. We should see the following output:
+Confirm that the Hive table is created properly. We should see the following output:
 
 ```
 hive> DESCRIBE used_cars.events;
@@ -251,7 +251,7 @@ $ exit
 
 # Analyzing Car Ads Dataset
 
-## Connecting to HIVE from R Studio
+## Connecting to Hive from R Studio
 
 To perform the analysis, certain R libraries were used. The code below was used to load and initialize the library, then loads the data.  To pretty-print the tables in this report we used xtable \citep{R-xtable} library.
 
@@ -267,7 +267,7 @@ library(data.table)
 library(ggplot2)
 ```
 
-To extract the data from USED_CARS database in HIVE running on Hortonworks Sandbox VM I've connecting to VM remotely using HIVE JDBC driver. The following R code opens JDBC connection to the sandbox and set USED_CARS as a default database:
+To extract the data from USED_CARS database in Hive running on Hortonworks Sandbox VM is connected remotely using Hive JDBC driver. The following R code opens JDBC connection to the sandbox and set USED_CARS as a default database:
 
 ```
 options( java.parameters = "-Xmx8g" )
@@ -303,7 +303,7 @@ conn <- dbConnect(drv, "jdbc:hive2://127.0.0.1:10000/used_cars", "maria_dev", "m
 dbSendUpdate(conn, "USE used_cars")
 ```
 
-To test the connection I first requesting the EVENTS table description. Full description of the attributes presented on [Classified Ads for Cars](https://www.kaggle.com/mirosval/personal-cars-classifieds/home) home page. R code below sending to HIVE HQL statement **describe events** and getting the results as a regular R dataframe object presented in Table \ref{table:events}
+To test the connection the EVENTS table description was requiested. Full description of the attributes presented on [Classified Ads for Cars](https://www.kaggle.com/mirosval/personal-cars-classifieds/home) home page. R code below sending to Hive HQL statement **describe events** and getting the results as a regular R dataframe object presented in Table \ref{table:events}
 
 
 ```{r}
@@ -330,13 +330,13 @@ dbGetQuery(conn, "select count (*) from events")
 
 \newpage
 
-## Extracting sample data from HIVE database
+## Extracting sample data from Hive database
 
-For the analysis I will extract not more than 30K rows from EVENT table randomly using the HQL statement below.   I skip the rows mising the most important attributes for which a **filter** is created to be used in WHERE clause of the HQL statement. 
+For the analysis we will extract not more than 30K rows from EVENT table randomly using the HQL statement below.   We skip the rows missing the most important attributes for which a **filter** is created to be used in WHERE clause of the HQL statement. 
 
-To make sure that I scan through the entire dataset the variable **lim** is calculated as desired sample size divided by total number of records qualified for the sample. It is then compared with randomly generated number 0..1 to decide if the filtered row is chosen for the sample set. Note that actual number of rows in the extracted **cars.sample** dataframe is 29958 which is expected considering that we used **'less than'** condition and the fact that number of rows is a whole number.
+To make sure that we scan through the entire dataset the variable **lim** is calculated as desired sample size divided by total number of records qualified for the sample. It is then compared with randomly generated number 0..1 to decide if the filtered row is chosen for the sample set. Note that actual number of rows in the extracted **cars.sample** dataframe is 29958 which is expected considering that we used **'less than'** condition and the fact that number of rows is a whole number.
 
-Note that I renaming dataset columns names for better presentation and readability. Also It is very important to disconnect from the HIVE at the end of the session which is done at the end of the script.
+Note that we renaming dataset columns names for better presentation and readability. Also it is very important to disconnect from the Hive at the end of the session which is done at the end of the script.
 
 
 ```
@@ -386,14 +386,14 @@ dbDisconnect(conn)
 
 ## Creating additional columns for analysis
 
-For the sake of better understanding the data I introdiced a few new columnns. First two are ListedTS and RemovedTS which are Timestamp values of when the cars are listed and when they last seen in the ads:
+For the sake of better understanding the data I introduced a few new columnns. First two are ListedTS and RemovedTS which are Timestamp values of when the cars are listed and when they last seen in the ads:
 
 ```{r}
 cars.sample$ListedTS <- strptime(cars.sample$Listed, '%Y-%m-%d %H:%M:%OS')
 cars.sample$RemovedTS <- strptime(cars.sample$Removed, '%Y-%m-%d %H:%M:%OS')
 ```
 
-Next value is an amount of days cars were listed calculated as difference between ListedTS and RemovedTS. The distribytion of that value is presented on Figure \ref{fig:hist_10}. Vertical red line is a 60 days limit that was used by ads agency to forcefully remove car listings. 
+Next value is an amount of days cars were listed calculated as difference between ListedTS and RemovedTS. The distribution of that value is presented on Figure \ref{fig:hist_10}. Vertical red line is a 60 days limit that was used by ads agency to forcefully remove car listings. 
 
 ```{r}
 cars.sample$DaysListed <- as.integer(ceiling(
@@ -408,13 +408,15 @@ ggplot(cars.sample, aes(x=DaysListed)) +
   geom_vline(aes(xintercept=60), color="red", linetype="dashed", size=1)
 ```
 
-Looking at the Figure \ref{fig:hist_10} it is reasonably to assume that cars that were listed not more than 6 weeks (42 days) were actually sold. This date represented by a blue line. This leads us to introducing a new boolean attribure **Sold** that will be used for the analysis:
+## Data discovery
+
+Looking at the Figure \ref{fig:hist_10} it is reasonable to assume that cars that were listed not more than 6 weeks (42 days) were actually sold. This date represented by a blue line. This leads us to introducing a new boolean attribute **Sold** that will be used for the analysis:
 
 ```{r}
 cars.sample$Sold <- cars.sample$DaysListed <= 42
 ```
 
-One of the most important characteristics of the car on sale is it's age. Code below calculates the **Age** attribute as a difference between year of manufacturing and the year when the car was listed for sale. Distribution of the listed cars age is presented in Figure \ref{fig:hist_11}. The green line is a mean value which is about 12 years. Note that the most frequently listed cars are less than 1 year old.
+One of the most important characteristics of the car on sale is its age. Code below calculates the **Age** attribute as a difference between year of manufacturing and the year when the car was listed for sale. Distribution of the listed cars age is presented in Figure \ref{fig:hist_11}. The green line is a mean value which is about 12 years. Note that the most frequently listed cars are less than 1 year old.
 
 ```{r}
 cars.sample$Age <- as.integer(ceiling(
@@ -429,7 +431,7 @@ ggplot(cars.sample, aes(x=Age)) +
              color="green", linetype="dashed", size=1)
 ```
 
-Now that we calculated the additional attributes, we can have a look at the rows of the sample dataset (see Table \ref{table:carhead22}) and continue the analysis. The next most important question is a mileage of a listed car. Distribition of mileage of the liste cars generated by the code below is predented in Figure \ref{fig:hist_12}. The green line is a mean value which is about 125,000 km. Note that most frequently listed cars have low mileage - less that 20,000 km.
+Now that we calculated the additional attributes, we can have a look at the rows of the sample dataset (see Table \ref{table:carhead22}) and continue the analysis. The next most important question is a mileage of a listed car. Distribution of mileage of the listed cars generated by the code below is presented in Figure \ref{fig:hist_12}. The green line is a mean value which is about 125,000 km. Note that most frequently listed cars have low mileage - less that 20,000 km.
 
 ```{r hist_12, fig.height=3.5, fig.width=5.5, fig.align="center", fig.cap="Distribution of the mileage of advertised cars" ,message=FALSE, warning=FALSE}
 ggplot(cars.sample, aes(x=Mileage)) + 
@@ -460,7 +462,7 @@ ggplot(cars.sample, aes(fct_rev(fct_infreq(Maker)), fill=Sold)) +
   
 ```
 
-Next logical question is what are the 20 most listed car models and how they are being sold? Answer to this question gives Figure \ref{fig:hist_2} generated by the code below. Looking at this chart we can see that the most listed and sold car model is Scoda Octavia, second is Scoda Fabia. Volkswagen even though being listed second most, does not sell well.
+Next logical question is what are the 20 most listed car models and how they are being sold? Answer to this question gives Figure \ref{fig:hist_2} generated by the code below. Looking at this chart we can see that the most listed and sold car model is Skoda Octavia, second is Skoda Fabia. Volkswagen even though being listed second most, does not sell well.
 
 ```{r hist_2, fig.height=4.5, fig.width=5.5, fig.align="center", fig.cap="Most advertised vs sold cars models"}
 cars.sample$Car <- paste(cars.sample$Maker, cars.sample$Model)
@@ -473,7 +475,7 @@ ggplot(cars.sample.bestCars, aes(fct_rev(fct_infreq(Car)), fill=Sold)) +
        coord_flip()
 ```
 
-And what are the 20 most listed cars and how they are being sold? Answer to this question gives Figure \ref{fig:hist_3} generated by the code below. Looking at this chart we can see that the most slited and  sold are Audi A3 2015 and Skoda Octavia 2015 and 2012. Also it looks that older Scoda models are selling in better proportion comparing to number of listing newer models.
+And what are the 20 most listed cars and how they are being sold? Answer to this question gives Figure \ref{fig:hist_3} generated by the code below. Looking at this chart we can see that the most listed and  sold are Audi A3 2015 and Skoda Octavia 2015 and 2012. Also it looks that older Skoda models are selling in better proportion comparing to number of listing newer models.
 
 ```{r hist_3, fig.height=4.5, fig.width=5.5, fig.align="center", fig.cap="Most advertised vs sold cars"}
 cars.sample$Car1 <- paste(cars.sample$Maker, cars.sample$Model, cars.sample$Year)
@@ -488,7 +490,7 @@ ggplot(cars.sample.bestCars, aes(fct_rev(fct_infreq(Car1)), fill=Sold)) +
 
 And finally - what is the distribution of car prices of the cars that were sold and not sold? Answer to this question gives Figure \ref{fig:hist_33} generated by the code below. Looking at this chart we can see that the most frequent asked and paid price is 1295.34 euro. We can also make a conclusion that most cars with prices bigger than this value are not sold.
 
-```{r hist_33, fig.height=6, fig.width=5.5, fig.align="center", fig.cap="Distribution of prices of the sold cars", message=FALSE, warning=FALSE}
+```{r hist_33, fig.height=6, fig.width=5.5, fig.align="center", fig.cap="Distribution of car prices", message=FALSE, warning=FALSE}
 ggplot(cars.sample, aes(Price, fill=Sold)) + 
   geom_histogram(bins=120) +
   scale_x_continuous(limits = c(0, 40000)) +
@@ -501,13 +503,20 @@ Mode <- function(x) {
 Mode(cars.sample$Price)
 ```
 
-
 \newpage
 
 # Conclusion
+In the course of this project a Hortonworks Sandbox VM with pre-installed Hadoop and Hive frameworks was run in Oracle Virtual Box manager on Windows 10 workstation that has 2x E5620 Xeon (24-cores) and 64GB RAM configuration.
+
+Classified Ads for Cars dataset (3.5M rows of 16 attributes) was downloaded, processed and transferred to Hadoop HDFS system. Then a Hive database and EVENTS table was created and the dataset was loaded. The Hive database was tested and sample queries were run.
+
+The Hive database was accessed via JDBC from remote machine running R Studio. An HQL statements were created and run to extract a sample 30K rows dataset.
+
+The dataset analysis was done in R Studio. During the data discovery the dataset was cleaned and enriched with new columns such as Age and Sold. The important questions were answered such as distribution of listed cars age and mileage and what are the most listed and sold car brands and models. Finally the distribution of listed car prices and the price of the most sold cars were calculated.
+
 The project was a success.
 
 \bibliography{RJreferences}
 
 # Note from the Author
-This file was generated using [_The R Journal_ style article template](https://github.com/rstudio/rticles), additional information on how to prepare articles for submission is here - [Instructions for Authors](https://journal.r-project.org/share/author-guide.pdf). The article itself is an executable R Markdown file that could be [downloaded from Github](https://github.com/ivbsoftware/csda1020-project1/tree/master/docs/R_Journal/csda1020-project1) with all the necessary artifacts.
+This file was generated using [_The R Journal_ style article template](https://github.com/rstudio/rticles), additional information on how to prepare articles for submission is here - [Instructions for Authors](https://journal.r-project.org/share/author-guide.pdf). The article itself is an executable R Markdown file that could be [downloaded from Github](https://github.com/ivbsoftware/csda1020-project-1/blob/master/docs/R_Journal/csda1020-project1/csda1020-project1.Rmd) with all the necessary artifacts.
